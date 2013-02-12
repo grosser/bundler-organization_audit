@@ -1,6 +1,7 @@
 GIT
   remote: git://github.com/grosser/bundler-audit.git
-  revision: f6e2e4a79e1fcd2d22e0cb5803ab5e2804e99d0c
+  revision: 65d2054ff37991e29b63e304a66f0f569ceb9a39
+  branch: path
   specs:
     bundler-audit (0.1.1)
       bundler (~> 1.0)
