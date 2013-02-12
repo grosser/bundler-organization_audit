@@ -10,7 +10,13 @@ module Bundler
     class << self
       def run(options)
         failed = find_failed(options)
-        exit (failed.size > 0 ? 1 : 0)
+        if failed.size == 0
+          exit 0
+        else
+          puts "Failed:"
+          puts failed.map(&:first)
+          exit 1
+        end
       end
 
       def download_lock_file(url, branch, options)
@@ -49,7 +55,7 @@ module Bundler
             project = url.split("/").last
             puts "\n#{project}"
             if download_lock_file(url, branch, options)
-              url unless sh("bundle-audit")
+              not sh("bundle-audit")
             else
               puts "No Gemfile.lock found"
             end
