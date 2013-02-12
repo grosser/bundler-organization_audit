@@ -16,12 +16,18 @@ Usage
 =====
 
 ### Public repos
-
+For yourself (git config github.user)
 ```Bash
-bundle-authorization-audit # for yourself (git config github.user)
-parllel: safe
-parllel_tests: safe
-rails_example_app:
+bundle-authorization-audit
+parallel
+No Gemfile.lock found
+
+parllel_tests
+bundle-audit
+No unpatched versions found
+
+rails_example_app
+bundle-audit
 Name: rack
 Version: 1.4.4
 CVE: 2013-0263
@@ -29,10 +35,11 @@ Criticality: High
 URL: http://osvdb.org/show/osvdb/89939
 Title: Rack Rack::Session::Cookie Function Timing Attack Remote Code Execution
 Patched Versions: ~> 1.1.6, ~> 1.2.8, ~> 1.3.10, ~> 1.4.5, >= 1.5.2
+```
 
-bundle-authorization-audit --user grosser # for someone elese
-...
-
+For someone elese
+```Bash
+bundle-authorization-audit --user grosser #
 ```
 
 ### Private repos
