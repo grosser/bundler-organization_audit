@@ -6,6 +6,7 @@ describe Bundler::OrganizationAudit do
   end
 
   describe Bundler::OrganizationAudit do
+    let(:config){ YAML.load_file("spec/private.yml") }
     describe ".repos" do
       it "returns the list of public repositories" do
         list = Bundler::OrganizationAudit.repos(:user => "grosser")
@@ -13,17 +14,38 @@ describe Bundler::OrganizationAudit do
       end
 
       if File.exist?("spec/private.yml")
-        it "returns the list of private repositories" do
-          config = YAML.load_file("spec/private.yml")
+        it "returns the list of private repositories from a user" do
           list = Bundler::OrganizationAudit.repos(:token => config["token"])
           list.should include(["https://github.com/#{config["user"]}/#{config["expected_user"]}", "master"])
         end
 
         it "returns the list of private repositories from a organization" do
-          config = YAML.load_file("spec/private.yml")
           list = Bundler::OrganizationAudit.repos(:token => config["token"], :organization => config["organization"])
           list.should include(["https://github.com/#{config["organization"]}/#{config["expected_organization"]}", "master"])
         end
+      end
+    end
+
+    describe ".download_lock_file" do
+      if File.exist?("spec/private.yml")
+        it "can download a private lockfile" do
+          url = "https://github.com/#{config["organization"]}/#{config["expected_organization"]}"
+          in_temp_dir do
+            Bundler::OrganizationAudit.download_lock_file(url, "master", :raw_token => config["raw_token"], :user => config["user"])
+            File.read("Gemfile.lock").should include('i18n (0.')
+          end
+        end
+      end
+
+      it "can download a public lockfile" do
+        in_temp_dir do
+          Bundler::OrganizationAudit.download_lock_file("https://github.com/grosser/parallel", "master", {})
+          File.read("Gemfile.lock").should include('rspec (2')
+        end
+      end
+
+      def in_temp_dir(&block)
+        Dir.mktmpdir { |dir| Dir.chdir(dir, &block) }
       end
     end
 
