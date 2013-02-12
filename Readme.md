@@ -31,10 +31,13 @@ bundle-authorization-audit --user grosser # for someone elese
 ### Private repos
 
 ```Bash
-curl -v -u grosser -X POST https://api.github.com/authorizations --data '{"scopes":["repo"]}'
+# create a token that has access to your repositories
+curl -v -u your-user-name -X POST https://api.github.com/authorizations --data '{"scopes":["repo"]}'
 enter your password -> you get a TOKEN
 
 bundle-authorization-audit --token TOKEN
+
+bundle-authorization-audit --token TOKEN --user your-organization-name
 ...
 ```
 
