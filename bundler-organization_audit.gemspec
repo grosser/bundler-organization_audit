@@ -12,4 +12,5 @@ Gem::Specification.new name, Bundler::OrganizationAudit::VERSION do |s|
   s.signing_key = File.expand_path("~/.ssh/gem-private_key.pem")
   s.cert_chain = [".public_cert.pem"]
   s.executables = ["bundle-organization-audit"]
+  s.add_runtime_dependency "json"
 end

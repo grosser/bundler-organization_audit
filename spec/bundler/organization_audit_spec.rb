@@ -5,9 +5,28 @@ describe Bundler::OrganizationAudit do
     Bundler::OrganizationAudit::VERSION.should =~ /^[\.\da-z]+$/
   end
 
+  describe Bundler::OrganizationAudit do
+    describe ".repos" do
+      it "returns the list of public repositories" do
+        list = Bundler::OrganizationAudit.repos(:user => "grosser")
+        list.should include(["https://github.com/grosser/parallel", "master"])
+      end
+
+      if File.exist?("spec/private.yml")
+        it "returns the list of private repositories" do
+          config = YAML.load_file("spec/private.yml")
+          list = Bundler::OrganizationAudit.repos(:token => config["token"])
+          list.should include(["https://github.com/#{config["user"]}/#{config["expected"]}", "master"])
+        end
+      end
+    end
+  end
+
   context "CLI" do
     it "can audit a user" do
-
+      result = audit("--user anamartinez").gsub(/\e\[\d+m/, "")
+      result.should include "No Gemfile.lock found for I18N-tools"
+      result.should include "js-cldr-timezones\nbundle-audit\nNo unpatched versions found"
     end
 
     it "shows --version" do
