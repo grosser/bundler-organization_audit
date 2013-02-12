@@ -1,1 +1,1 @@
-require "bundle_organization_audit"
+require "bundler/organization_audit"

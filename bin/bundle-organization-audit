@@ -1,0 +1,21 @@
+#!/usr/bin/env ruby
+require "rubygems"
+require "optparse"
+
+$LOAD_PATH << File.join(File.dirname(__FILE__), '..', 'lib')
+require "bundler/organization_audit"
+
+options = {}
+OptionParser.new do |opts|
+  opts.banner = <<BANNER
+Audit all Gemfiles of a user/organization on github for unpatched versions
+
+Usage:
+    bundle-organization-audit your-user-name
+
+Options:
+BANNER
+  opts.on("-h", "--help","Show this.") { puts opts; exit }
+  opts.on("-v", "--version","Show Version"){ puts Bundler::OrganizationAudit::VERSION; exit}
+end.parse!
+

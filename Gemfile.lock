@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    bundle_organization_audit (0.0.0)
+    bundler-organization_audit (0.0.0)
 
 GEM
   remote: http://rubygems.org/
@@ -23,6 +23,6 @@ PLATFORMS
 
 DEPENDENCIES
   bump
-  bundle_organization_audit!
+  bundler-organization_audit!
   rake
   rspec (~> 2)
