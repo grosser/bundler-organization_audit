@@ -3,6 +3,13 @@ Audit all Gemfiles of a user/organization on github for unpatched versions
 Install
 =======
 
+    # until new bundler-audit gem is realesed:
+    git clone git://github.com/grosser/bundler-organization_audit.git
+    cd bundler-organization_audit
+    bundle
+    bundle exec ./bin/bundler-organization_audit
+
+    # once things normalize
     gem install bundler-organization_audit
 
 Usage
@@ -32,18 +39,22 @@ bundle-authorization-audit --user grosser # for someone elese
 
 ```Bash
 # create a token that has access to your repositories
-curl -v -u your-user-name -X POST https://api.github.com/authorizations --data '{"scopes":["repo"]}'
-enter your password -> you get a TOKEN
+curl -v -u your-user-name -X POST https://api.github.com/authorizations --data '{"scopes":["repo","download"]}'
+enter your password -> TOKEN
 
-bundle-authorization-audit --token TOKEN
+# get raw token
+Go to a private repo of the user/organization, click a file, click the raw link and copy the token from the url -> RAW_TOKEN
 
-bundle-authorization-audit --token TOKEN --user your-organization-name
-...
+bundle-authorization-audit --user your-user --token TOKEN --organization your-organization --raw-token RAW_TOKEN
 ```
 
 Dev
 ===
  - test private repo fetching via `cp spec/private{.example,}.yml` and filling it out
+
+TODO
+====
+ - make raw-token unnecessary <-> maybe a hidden scope name like "raw" ?
 
 Author
 ======

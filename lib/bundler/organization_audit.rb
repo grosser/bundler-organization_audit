@@ -13,15 +13,26 @@ module Bundler
         exit (failed.size > 0 ? 1 : 0)
       end
 
-      def download_lock_file(url, branch)
+      def download_lock_file(url, branch, options)
         lock_file = "Gemfile.lock"
-        content = open(File.join(url.sub("://", "://raw."), branch, lock_file)).read
+        url = File.join(url.sub("://", "://raw."), branch, lock_file)
+        if options[:raw_token] && options[:user]
+          url << "?login=#{options[:user]}&token=#{options[:raw_token]}"
+        end
+        content = open(url).read
         File.open(lock_file, "w") { |f| f.write content }
       rescue OpenURI::HTTPError
       end
 
       def repos(options)
-        url = File.join(HOST, (options[:user] ? "users/#{options[:user]}" : "user"), "repos")
+        user = if options[:organization]
+          "orgs/#{options[:organization]}"
+        elsif options[:user]
+          "users/#{options[:user]}"
+        else
+          "user"
+        end
+        url = File.join(HOST, user, "repos")
         headers = (options[:token] ? {"Authorization" => "token #{options[:token]}"} : {})
 
         download_all_pages(url, headers).map do |repo|
@@ -37,7 +48,7 @@ module Bundler
           repos(options).select do |url, branch|
             project = url.split("/").last
             puts "\n#{project}"
-            if download_lock_file(url, branch)
+            if download_lock_file(url, branch, options)
               url unless sh("bundle-audit")
             else
               puts "No Gemfile.lock found"

@@ -21,8 +21,8 @@ describe Bundler::OrganizationAudit do
 
         it "returns the list of private repositories from a organization" do
           config = YAML.load_file("spec/private.yml")
-          list = Bundler::OrganizationAudit.repos(:token => config["token"], :user => config["organization"])
-          list.should include(["https://github.com/#{config["user"]}/#{config["expected_organization"]}", "master"])
+          list = Bundler::OrganizationAudit.repos(:token => config["token"], :organization => config["organization"])
+          list.should include(["https://github.com/#{config["organization"]}/#{config["expected_organization"]}", "master"])
         end
       end
     end

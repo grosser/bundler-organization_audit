@@ -15,8 +15,10 @@ Usage:
 
 Options:
 BANNER
-  opts.on("-t", "--token TOKEN","Use token") { |token| options[:token] = token }
-  opts.on("-u", "--user USER","Use user") { |user| options[:user] = user }
+  opts.on("--token TOKEN","Use token") { |token| options[:token] = token }
+  opts.on("--raw-token TOKEN","Use raw token") { |token| options[:raw_token] = token }
+  opts.on("--user USER","Use user") { |user| options[:user] = user }
+  opts.on("--organization ORGANIZATION","Use user") { |organization| options[:organization] = organization }
   opts.on("-h", "--help","Show this.") { puts opts; exit }
   opts.on("-v", "--version","Show Version"){ puts Bundler::OrganizationAudit::VERSION; exit}
 end.parse!
