@@ -16,7 +16,13 @@ describe Bundler::OrganizationAudit do
         it "returns the list of private repositories" do
           config = YAML.load_file("spec/private.yml")
           list = Bundler::OrganizationAudit.repos(:token => config["token"])
-          list.should include(["https://github.com/#{config["user"]}/#{config["expected"]}", "master"])
+          list.should include(["https://github.com/#{config["user"]}/#{config["expected_user"]}", "master"])
+        end
+
+        it "returns the list of private repositories from a organization" do
+          config = YAML.load_file("spec/private.yml")
+          list = Bundler::OrganizationAudit.repos(:token => config["token"], :user => config["organization"])
+          list.should include(["https://github.com/#{config["user"]}/#{config["expected_organization"]}", "master"])
         end
       end
     end
@@ -39,7 +45,7 @@ describe Bundler::OrganizationAudit do
   context "CLI" do
     it "can audit a user" do
       result = audit("--user anamartinez").gsub(/\e\[\d+m/, "")
-      result.should include "No Gemfile.lock found for I18N-tools"
+      result.should include "I18N-tools\nNo Gemfile.lock found"
       result.should include "js-cldr-timezones\nbundle-audit\nNo unpatched versions found"
     end
 

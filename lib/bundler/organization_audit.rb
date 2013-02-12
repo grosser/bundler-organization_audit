@@ -21,11 +21,8 @@ module Bundler
       end
 
       def repos(options)
-        url, headers = if options[:token]
-          ["#{HOST}/user/repos", {"Authorization" => "token #{options[:token]}"}]
-        else
-          ["#{HOST}/users/#{options[:user]}/repos", {}]
-        end
+        url = File.join(HOST, (options[:user] ? "users/#{options[:user]}" : "user"), "repos")
+        headers = (options[:token] ? {"Authorization" => "token #{options[:token]}"} : {})
 
         download_all_pages(url, headers).map do |repo|
           preferred_branch = repo["default_branch"] || repo["master_branch"] || "master"
@@ -43,7 +40,7 @@ module Bundler
             if download_lock_file(url, branch)
               url unless sh("bundle-audit")
             else
-              puts "No Gemfile.lock found for #{project}"
+              puts "No Gemfile.lock found"
             end
           end
         end
