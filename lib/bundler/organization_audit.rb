@@ -9,17 +9,8 @@ module Bundler
 
     class << self
       def run(options)
-        in_temp_dir do
-          repos(options).each do |url, branch|
-            project = url.split("/").last
-            puts "\n#{project}"
-            if download_lock_file(url, branch)
-              sh("bundle-audit")
-            else
-              puts "No Gemfile.lock found for #{project}"
-            end
-          end
-        end
+        failed = find_failed(options)
+        exit (failed.size > 0 ? 1 : 0)
       end
 
       def download_lock_file(url, branch)
@@ -43,6 +34,20 @@ module Bundler
       end
 
       private
+
+      def find_failed(options)
+        in_temp_dir do
+          repos(options).select do |url, branch|
+            project = url.split("/").last
+            puts "\n#{project}"
+            if download_lock_file(url, branch)
+              url unless sh("bundle-audit")
+            else
+              puts "No Gemfile.lock found for #{project}"
+            end
+          end
+        end
+      end
 
       def in_temp_dir(&block)
         Dir.mktmpdir { |dir| Dir.chdir(dir, &block) }

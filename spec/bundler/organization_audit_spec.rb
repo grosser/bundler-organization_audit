@@ -20,6 +20,20 @@ describe Bundler::OrganizationAudit do
         end
       end
     end
+
+    describe ".run" do
+      it "is successful when failed are empty" do
+        Bundler::OrganizationAudit.should_receive(:find_failed).and_return([])
+        Bundler::OrganizationAudit.should_receive(:exit).with(0)
+        Bundler::OrganizationAudit.run({})
+      end
+
+      it "fails with failed" do
+        Bundler::OrganizationAudit.should_receive(:find_failed).and_return([["url", "branch"]])
+        Bundler::OrganizationAudit.should_receive(:exit).with(1)
+        Bundler::OrganizationAudit.run({})
+      end
+    end
   end
 
   context "CLI" do
