@@ -26,10 +26,10 @@ describe Bundler::OrganizationAudit do
       end
     end
 
-    describe ".download_lock_file" do
+    describe ".download_file" do
       it "can download a public lockfile" do
         in_temp_dir do
-          Bundler::OrganizationAudit.send(:download_lock_file, "https://api.github.com/repos/grosser/parallel", "master", false, {})
+          Bundler::OrganizationAudit.send(:download_file, "https://api.github.com/repos/grosser/parallel", "master", false, "Gemfile.lock", {})
           File.read("Gemfile.lock").should include('rspec (2')
         end
       end
@@ -38,7 +38,7 @@ describe Bundler::OrganizationAudit do
         it "can download a private lockfile" do
           url = "https://api.github.com/repos/#{config["organization"]}/#{config["expected_organization"]}"
           in_temp_dir do
-            Bundler::OrganizationAudit.send(:download_lock_file, url, "master", true, :token => config["token"], :user => config["user"])
+            Bundler::OrganizationAudit.send(:download_file, url, "master", true, "Gemfile.lock", :token => config["token"], :user => config["user"])
             File.read("Gemfile.lock").should include('i18n (0.')
           end
         end
@@ -50,7 +50,14 @@ describe Bundler::OrganizationAudit do
         out = record_stdout do
           Bundler::OrganizationAudit.send(:audit_repo, "https://api.github.com/repos/grosser/parallel", "master", false, {})
         end
-        decolorize(out).should == "bundle-audit\nNo unpatched versions found\n"
+        out.should == "bundle-audit\nNo unpatched versions found\n"
+      end
+
+      it "does not audit ignored repos" do
+        out = record_stdout do
+          Bundler::OrganizationAudit.send(:audit_repo, "https://api.github.com/repos/grosser/parallel", "master", false, :ignore_gems => true)
+        end
+        out.should == "Ignored because it's a gem\n"
       end
     end
 
@@ -107,7 +114,7 @@ describe Bundler::OrganizationAudit do
     recorder = StringIO.new
     $stdout, old = recorder, $stdout
     yield
-    recorder.string
+    decolorize(recorder.string)
   ensure
     $stdout = old
   end

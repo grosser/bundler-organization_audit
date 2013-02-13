@@ -39,12 +39,12 @@ Patched Versions: ~> 1.1.6, ~> 1.2.8, ~> 1.3.10, ~> 1.4.5, >= 1.5.2
 
 For someone elese
 ```Bash
-bundle-authorization-audit --user grosser #
+bundle-authorization-audit --user grosser
 ```
 
-Ignore gems
+Ignore gems (ignores repos that have a %{repo}.gemspec)
 ```Bash
-bundle-authorization-audit --ignore-gems # same as --ignore-with-file "%{repo}.gemspec"
+bundle-authorization-audit --ignore-gems
 ```
 
 
@@ -52,7 +52,7 @@ bundle-authorization-audit --ignore-gems # same as --ignore-with-file "%{repo}.g
 
 ```Bash
 # create a token that has access to your repositories
-curl -v -u your-user-name -X POST https://api.github.com/authorizations --data '{"scopes":["repo","download"]}'
+curl -v -u your-user-name -X POST https://api.github.com/authorizations --data '{"scopes":["repo"]}'
 enter your password -> TOKEN
 
 bundle-authorization-audit --user your-user --token TOKEN --organization your-organization
@@ -61,10 +61,6 @@ bundle-authorization-audit --user your-user --token TOKEN --organization your-or
 Dev
 ===
  - test private repo fetching via `cp spec/private{.example,}.yml` and filling it out
-
-TODO
-====
- - make raw-token unnecessary <-> maybe a hidden scope name like "raw" ?
 
 Author
 ======

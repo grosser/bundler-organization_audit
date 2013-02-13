@@ -38,14 +38,13 @@ module Bundler
 
       private
 
-      def download_lock_file(url, branch, private, options)
-        lock_file = "Gemfile.lock"
+      def download_file(url, branch, private, file, options)
         content = if private
-          download_content_via_api(url, branch, lock_file, options)
+          download_content_via_api(url, branch, file, options)
         else
-          download_content_via_raw(url, branch, lock_file)
+          download_content_via_raw(url, branch, file)
         end
-        File.open(lock_file, "w") { |f| f.write content }
+        File.open(file, "w") { |f| f.write content }
       rescue OpenURI::HTTPError => e
         raise e unless e.message.start_with?("404")
       end
@@ -78,8 +77,13 @@ module Bundler
 
       def audit_repo(url, branch, private, options)
         in_temp_dir do
-          if download_lock_file(url, branch, private, options)
-            not sh("bundle-audit")
+          if download_file(url, branch, private, "Gemfile.lock", options)
+            gemspec = url.split("/").last + ".gemspec"
+            if options[:ignore_gems] && download_file(url, branch, private, gemspec, options)
+              puts "Ignored because it's a gem"
+            else
+              not sh("bundle-audit")
+            end
           else
             puts "No Gemfile.lock found"
           end
