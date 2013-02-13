@@ -9,11 +9,11 @@ module Bundler
         vulnerable = find_vulnerable(options).map(&:url)
         vulnerable -= (options[:ignore] || [])
         if vulnerable.size == 0
-          exit 0
+          0
         else
           $stderr.puts "Vulnerable:"
           puts vulnerable
-          exit 1
+          1
         end
       end
 

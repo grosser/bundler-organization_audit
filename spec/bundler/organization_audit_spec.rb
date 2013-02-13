@@ -6,22 +6,22 @@ describe Bundler::OrganizationAudit do
   end
 
   describe Bundler::OrganizationAudit do
-    describe ".audit_repo" do
-      let(:repo) do
-        Bundler::OrganizationAudit::Repo.new(
-          "url" => "https://api.github.com/repos/grosser/parallel"
-        )
-      end
+    let(:repo) do
+      Bundler::OrganizationAudit::Repo.new(
+        "url" => "https://api.github.com/repos/grosser/parallel"
+      )
+    end
 
+    describe ".audit_repo" do
       it "audits public repos" do
-        out = record_stdout do
+        out = record_out do
           Bundler::OrganizationAudit.send(:audit_repo, repo, {})
         end
         out.strip.should == "parallel\nbundle-audit\nNo unpatched versions found"
       end
 
       it "does not audit ignored repos" do
-        out = record_stdout do
+        out = record_out do
           Bundler::OrganizationAudit.send(:audit_repo, repo, :ignore_gems => true)
         end
         out.strip.should == "parallel\nIgnored because it's a gem"
@@ -35,14 +35,16 @@ describe Bundler::OrganizationAudit do
 
       it "is successful when failed are empty" do
         Bundler::OrganizationAudit.should_receive(:find_vulnerable).and_return([])
-        Bundler::OrganizationAudit.should_receive(:exit).with(0)
-        Bundler::OrganizationAudit.run({})
+        record_out do
+          Bundler::OrganizationAudit.run({}).should == 0
+        end
       end
 
       it "fails with failed" do
-        Bundler::OrganizationAudit.should_receive(:find_vulnerable).and_return([["url", "branch"]])
-        Bundler::OrganizationAudit.should_receive(:exit).with(1)
-        Bundler::OrganizationAudit.run({})
+        Bundler::OrganizationAudit.should_receive(:find_vulnerable).and_return([repo])
+        record_out do
+          Bundler::OrganizationAudit.run({}).should == 1
+        end
       end
     end
   end
@@ -61,7 +63,7 @@ describe Bundler::OrganizationAudit do
     end
 
     it "only shows failed projects on stdout" do
-      result = audit("--user user-with-unpatched-apps 2>/dev/null", :fail => true, :keep_output => true)
+      result = audit("--user user-with-unpatched-apps", :fail => true, :keep_output => true)
       result.should == "https://github.com/user-with-unpatched-apps/unpatched\n"
     end
 
@@ -93,13 +95,15 @@ describe Bundler::OrganizationAudit do
     string.gsub(/\e\[\d+m/, "")
   end
 
-  def record_stdout
+  def record_out
     recorder = StringIO.new
-    $stdout, old = recorder, $stdout
+    $stdout, out = recorder, $stdout
+    $stderr, err = recorder, $stderr
     yield
     decolorize(recorder.string)
   ensure
-    $stdout = old
+    $stdout = out
+    $stderr = err
   end
 
   def in_temp_dir(&block)

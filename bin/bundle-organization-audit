@@ -5,6 +5,11 @@ require "optparse"
 $LOAD_PATH << File.join(File.dirname(__FILE__), '..', 'lib')
 require "bundler/organization_audit"
 
+def git_config(thing)
+  result = `git config #{thing}`.strip
+  result.empty? ? nil : result
+end
+
 options = {
   :ignore => [],
   :user => git_config("github.user")
@@ -27,9 +32,4 @@ BANNER
   opts.on("-v", "--version", "Show Version"){ puts Bundler::OrganizationAudit::VERSION; exit}
 end.parse!
 
-def git_config(thing)
-  result = `git config #{thing}`.strip
-  result.empty? ? nil : result
-end
-
-Bundler::OrganizationAudit.run(options)
+exit Bundler::OrganizationAudit.run(options)
