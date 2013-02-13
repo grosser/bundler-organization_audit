@@ -65,6 +65,11 @@ describe Bundler::OrganizationAudit do
       result.should == "https://github.com/user-with-unpatched-apps/unpatched\n"
     end
 
+    it "ignores projects in --ignore" do
+      result = audit("--user user-with-unpatched-apps --ignore https://github.com/user-with-unpatched-apps/unpatched 2>/dev/null", :keep_output => true)
+      result.should == ""
+    end
+
     it "shows --version" do
       audit("--version").should include(Bundler::OrganizationAudit::VERSION)
     end

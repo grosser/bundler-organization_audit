@@ -5,7 +5,10 @@ require "optparse"
 $LOAD_PATH << File.join(File.dirname(__FILE__), '..', 'lib')
 require "bundler/organization_audit"
 
-options = {}
+options = {
+  :ignore => [],
+  :user => git_config("github.user")
+}
 OptionParser.new do |opts|
   opts.banner = <<BANNER
 Audit all Gemfiles of a user/organization on github for unpatched versions
@@ -15,12 +18,13 @@ Usage:
 
 Options:
 BANNER
-  opts.on("--token TOKEN","Use token") { |token| options[:token] = token }
-  opts.on("--user USER","Use user") { |user| options[:user] = user }
-  opts.on("--ignore-gems","Ignore repos that have a %{repo}.gemspec") { options[:ignore_gems] = true }
-  opts.on("--organization ORGANIZATION","Use user") { |organization| options[:organization] = organization }
-  opts.on("-h", "--help","Show this.") { puts opts; exit }
-  opts.on("-v", "--version","Show Version"){ puts Bundler::OrganizationAudit::VERSION; exit}
+  opts.on("--token TOKEN", "Use token") { |token| options[:token] = token }
+  opts.on("--user USER", "Use user") { |user| options[:user] = user }
+  opts.on("--ignore REPO_URL", "Ignore given repo urls (use multiple times)") { |repo_url| options[:ignore] << repo_url }
+  opts.on("--ignore-gems", "Ignore repos that have a %{repo}.gemspec") { options[:ignore_gems] = true }
+  opts.on("--organization ORGANIZATION", "Use user") { |organization| options[:organization] = organization }
+  opts.on("-h", "--help", "Show this.") { puts opts; exit }
+  opts.on("-v", "--version", "Show Version"){ puts Bundler::OrganizationAudit::VERSION; exit}
 end.parse!
 
 def git_config(thing)
@@ -28,5 +32,4 @@ def git_config(thing)
   result.empty? ? nil : result
 end
 
-Bundler::OrganizationAudit.run({:user => git_config("github.user")}.merge(options))
-
+Bundler::OrganizationAudit.run(options)

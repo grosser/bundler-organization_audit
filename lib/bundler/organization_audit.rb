@@ -6,7 +6,8 @@ module Bundler
   module OrganizationAudit
     class << self
       def run(options)
-        vulnerable = find_vulnerable(options)
+        vulnerable = find_vulnerable(options).map(&:url)
+        vulnerable -= (options[:ignore] || [])
         if vulnerable.size == 0
           exit 0
         else

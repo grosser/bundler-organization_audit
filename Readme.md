@@ -50,11 +50,19 @@ Ignore gems (ignores repos that have a %{repo}.gemspec)
 bundle-authorization-audit --ignore-gems
 ```
 
-For ci/pipe -> only show vulnerable repos
+For pipe -> only show vulnerable repos
 ```
 bundle-authorization-audit 2>/dev/null
 ```
 
+Use for CI -> ignore old/unmaintained proejcts
+```
+bundle-authorization-audit \
+  --ignore https://github.com/xxx/a \
+  --ignore https://github.com/xxx/b \
+  --organization xxx \
+  --token yyy
+```
 
 ### Private repos
 
