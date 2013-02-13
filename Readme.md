@@ -35,6 +35,9 @@ Criticality: High
 URL: http://osvdb.org/show/osvdb/89939
 Title: Rack Rack::Session::Cookie Function Timing Attack Remote Code Execution
 Patched Versions: ~> 1.1.6, ~> 1.2.8, ~> 1.3.10, ~> 1.4.5, >= 1.5.2
+
+Vulnerable:
+https://github.com/grosser/rails_example_app
 ```
 
 For someone elese
@@ -45,6 +48,11 @@ bundle-authorization-audit --user grosser
 Ignore gems (ignores repos that have a %{repo}.gemspec)
 ```Bash
 bundle-authorization-audit --ignore-gems
+```
+
+For ci/pipe -> only show vulnerable repos
+```
+bundle-authorization-audit 2>/dev/null
 ```
 
 

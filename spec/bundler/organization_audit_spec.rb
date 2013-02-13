@@ -34,13 +34,13 @@ describe Bundler::OrganizationAudit do
       end
 
       it "is successful when failed are empty" do
-        Bundler::OrganizationAudit.should_receive(:find_failed).and_return([])
+        Bundler::OrganizationAudit.should_receive(:find_vulnerable).and_return([])
         Bundler::OrganizationAudit.should_receive(:exit).with(0)
         Bundler::OrganizationAudit.run({})
       end
 
       it "fails with failed" do
-        Bundler::OrganizationAudit.should_receive(:find_failed).and_return([["url", "branch"]])
+        Bundler::OrganizationAudit.should_receive(:find_vulnerable).and_return([["url", "branch"]])
         Bundler::OrganizationAudit.should_receive(:exit).with(1)
         Bundler::OrganizationAudit.run({})
       end
@@ -57,7 +57,12 @@ describe Bundler::OrganizationAudit do
     it "can audit a unpatched user" do
       result = audit("--user user-with-unpatched-apps", :fail => true)
       result.should include "unpatched\nbundle-audit\nName: json\nVersion: 1.5.3" # Individual vulnerabilities
-      result.should include "Failed:\nhttps://github.com/user-with-unpatched-apps/unpatched" # Summary
+      result.should include "Vulnerable:\nhttps://github.com/user-with-unpatched-apps/unpatched" # Summary
+    end
+
+    it "only shows failed projects on stdout" do
+      result = audit("--user user-with-unpatched-apps 2>/dev/null", :fail => true, :keep_output => true)
+      result.should == "https://github.com/user-with-unpatched-apps/unpatched\n"
     end
 
     it "shows --version" do
@@ -73,7 +78,7 @@ describe Bundler::OrganizationAudit do
     end
 
     def sh(command, options={})
-      result = `#{command} 2>&1`
+      result = `#{command} #{"2>&1" unless options[:keep_output]}`
       raise "FAILED #{command}\n#{result}" if $?.success? == !!options[:fail]
       decolorize(result)
     end

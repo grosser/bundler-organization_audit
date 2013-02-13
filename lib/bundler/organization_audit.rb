@@ -6,12 +6,12 @@ module Bundler
   module OrganizationAudit
     class << self
       def run(options)
-        failed = find_failed(options)
-        if failed.size == 0
+        vulnerable = find_vulnerable(options)
+        if vulnerable.size == 0
           exit 0
         else
-          puts "Failed:"
-          puts failed
+          $stderr.puts "Vulnerable:"
+          puts vulnerable
           exit 1
         end
       end
@@ -23,7 +23,7 @@ module Bundler
         File.open(file, "w") { |f| f.write content }
       end
 
-      def find_failed(options)
+      def find_vulnerable(options)
         Repo.all(options).select do |repo|
           audit_repo(repo, options)
         end
@@ -31,22 +31,22 @@ module Bundler
 
       def audit_repo(repo, options)
         success = false
-        puts repo.project
+        $stderr.puts repo.project
         in_temp_dir do
           if download_file(repo, "Gemfile.lock", options)
             if options[:ignore_gems] && repo.gem?(options)
-              puts "Ignored because it's a gem"
+              $stderr.puts "Ignored because it's a gem"
             else
               success = !sh("bundle-audit")
             end
           else
-            puts "No Gemfile.lock found"
+            $stderr.puts "No Gemfile.lock found"
           end
         end
-        puts ""
+        $stderr.puts ""
         success
       rescue Exception => e
-        puts "Error auditing #{repo.project} (#{e})"
+        $stderr.puts "Error auditing #{repo.project} (#{e})"
       end
 
       def in_temp_dir(&block)
@@ -54,10 +54,10 @@ module Bundler
       end
 
       def sh(cmd)
-        puts cmd
+        $stderr.puts cmd
         IO.popen(cmd) do |pipe|
           while str = pipe.gets
-            puts str
+            $stderr.puts str
           end
         end
         $?.success?
