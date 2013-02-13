@@ -7,7 +7,7 @@ Install
     git clone git://github.com/grosser/bundler-organization_audit.git
     cd bundler-organization_audit
     bundle
-    bundle exec ./bin/bundler-organization_audit
+    bundle exec ./bin/bundle-organization-audit
 
     # once things normalize
     gem install bundler-organization_audit
@@ -18,7 +18,7 @@ Usage
 ### Public repos
 For yourself (git config github.user)
 ```Bash
-bundle-authorization-audit
+bundle-organization-audit
 parallel
 No Gemfile.lock found
 
@@ -42,22 +42,22 @@ https://github.com/grosser/rails_example_app
 
 For someone elese
 ```Bash
-bundle-authorization-audit --user grosser
+bundle-organization-audit --user grosser
 ```
 
 Ignore gems (ignores repos that have a %{repo}.gemspec)
 ```Bash
-bundle-authorization-audit --ignore-gems
+bundle-organization-audit --ignore-gems
 ```
 
 For pipe -> only show vulnerable repos
 ```
-bundle-authorization-audit 2>/dev/null
+bundle-organization-audit 2>/dev/null
 ```
 
 Use for CI -> ignore old/unmaintained proejcts
 ```
-bundle-authorization-audit \
+bundle-organization-audit \
   --ignore https://github.com/xxx/a \
   --ignore https://github.com/xxx/b \
   --organization xxx \
@@ -71,7 +71,7 @@ bundle-authorization-audit \
 curl -v -u your-user-name -X POST https://api.github.com/authorizations --data '{"scopes":["repo"]}'
 enter your password -> TOKEN
 
-bundle-authorization-audit --user your-user --token TOKEN --organization your-organization
+bundle-organization-audit --user your-user --token TOKEN --organization your-organization
 ```
 
 Dev
