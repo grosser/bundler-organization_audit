@@ -42,6 +42,12 @@ For someone elese
 bundle-authorization-audit --user grosser #
 ```
 
+Ignore gems
+```Bash
+bundle-authorization-audit --ignore-gems # same as --ignore-with-file "%{repo}.gemspec"
+```
+
+
 ### Private repos
 
 ```Bash

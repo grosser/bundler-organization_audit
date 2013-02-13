@@ -43,9 +43,14 @@ describe Bundler::OrganizationAudit do
           end
         end
       end
+    end
 
-      def in_temp_dir(&block)
-        Dir.mktmpdir { |dir| Dir.chdir(dir, &block) }
+    describe ".audit_repo" do
+      it "audits public repos" do
+        out = record_stdout do
+          Bundler::OrganizationAudit.send(:audit_repo, "https://api.github.com/repos/grosser/parallel", "master", false, {})
+        end
+        decolorize(out).should == "bundle-audit\nNo unpatched versions found\n"
       end
     end
 
@@ -70,7 +75,7 @@ describe Bundler::OrganizationAudit do
 
   context "CLI" do
     it "can audit a user" do
-      result = audit("--user anamartinez").gsub(/\e\[\d+m/, "")
+      result = audit("--user anamartinez")
       result.should include "I18N-tools\nNo Gemfile.lock found"
       result.should include "js-cldr-timezones\nbundle-audit\nNo unpatched versions found"
     end
@@ -90,7 +95,24 @@ describe Bundler::OrganizationAudit do
     def sh(command, options={})
       result = `#{command} 2>&1`
       raise "FAILED #{command}\n#{result}" if $?.success? == !!options[:fail]
-      result
+      decolorize(result)
     end
+  end
+
+  def decolorize(string)
+    string.gsub(/\e\[\d+m/, "")
+  end
+
+  def record_stdout
+    recorder = StringIO.new
+    $stdout, old = recorder, $stdout
+    yield
+    recorder.string
+  ensure
+    $stdout = old
+  end
+
+  def in_temp_dir(&block)
+    Dir.mktmpdir { |dir| Dir.chdir(dir, &block) }
   end
 end

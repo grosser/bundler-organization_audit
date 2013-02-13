@@ -69,15 +69,19 @@ module Bundler
       end
 
       def find_failed(options)
+        repos(options).select do |url, branch, private|
+          project = url.split("/").last
+          puts "\n#{project}"
+          audit_repo(url, branch, private, options)
+        end
+      end
+
+      def audit_repo(url, branch, private, options)
         in_temp_dir do
-          repos(options).select do |url, branch, private|
-            project = url.split("/").last
-            puts "\n#{project}"
-            if download_lock_file(url, branch, private, options)
-              not sh("bundle-audit")
-            else
-              puts "No Gemfile.lock found"
-            end
+          if download_lock_file(url, branch, private, options)
+            not sh("bundle-audit")
+          else
+            puts "No Gemfile.lock found"
           end
         end
       end
