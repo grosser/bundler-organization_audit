@@ -2,8 +2,6 @@ token: your-token-see-readme
 
 user: your-user
 expected_user: your-private-repo
-# user_not_private: true # if you don't have a user with private repos
 
 organization: org
 expected_organization: org-private-repo
-# organization_not_private: true # if you don't have a organization with private repos

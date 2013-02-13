@@ -6,58 +6,25 @@ describe Bundler::OrganizationAudit do
   end
 
   describe Bundler::OrganizationAudit do
-    let(:config){ YAML.load_file("spec/private.yml") }
-    describe ".repos" do
-      it "returns the list of public repositories" do
-        list = Bundler::OrganizationAudit.repos(:user => "grosser")
-        list.should include(["https://api.github.com/repos/grosser/parallel", "master", false])
-      end
-
-      if File.exist?("spec/private.yml")
-        it "returns the list of private repositories from a user" do
-          list = Bundler::OrganizationAudit.repos(:token => config["token"])
-          list.should include(["https://api.github.com/repos/#{config["user"]}/#{config["expected_user"]}", "master", !config["user_not_private"]])
-        end
-
-        it "returns the list of private repositories from a organization" do
-          list = Bundler::OrganizationAudit.repos(:token => config["token"], :organization => config["organization"])
-          list.should include(["https://api.github.com/repos/#{config["organization"]}/#{config["expected_organization"]}", "master", !config["organization_not_private"]])
-        end
-      end
-    end
-
-    describe ".download_file" do
-      it "can download a public lockfile" do
-        in_temp_dir do
-          Bundler::OrganizationAudit.send(:download_file, "https://api.github.com/repos/grosser/parallel", "master", false, "Gemfile.lock", {})
-          File.read("Gemfile.lock").should include('rspec (2')
-        end
-      end
-
-      if File.exist?("spec/private.yml")
-        it "can download a private lockfile" do
-          url = "https://api.github.com/repos/#{config["organization"]}/#{config["expected_organization"]}"
-          in_temp_dir do
-            Bundler::OrganizationAudit.send(:download_file, url, "master", true, "Gemfile.lock", :token => config["token"], :user => config["user"])
-            File.read("Gemfile.lock").should include('i18n (0.')
-          end
-        end
-      end
-    end
-
     describe ".audit_repo" do
+      let(:repo) do
+        Bundler::OrganizationAudit::Repo.new(
+          "url" => "https://api.github.com/repos/grosser/parallel"
+        )
+      end
+
       it "audits public repos" do
         out = record_stdout do
-          Bundler::OrganizationAudit.send(:audit_repo, "https://api.github.com/repos/grosser/parallel", "master", false, {})
+          Bundler::OrganizationAudit.send(:audit_repo, repo, {})
         end
-        out.should == "bundle-audit\nNo unpatched versions found\n"
+        out.strip.should == "parallel\nbundle-audit\nNo unpatched versions found"
       end
 
       it "does not audit ignored repos" do
         out = record_stdout do
-          Bundler::OrganizationAudit.send(:audit_repo, "https://api.github.com/repos/grosser/parallel", "master", false, :ignore_gems => true)
+          Bundler::OrganizationAudit.send(:audit_repo, repo, :ignore_gems => true)
         end
-        out.should == "Ignored because it's a gem\n"
+        out.strip.should == "parallel\nIgnored because it's a gem"
       end
     end
 
@@ -83,8 +50,8 @@ describe Bundler::OrganizationAudit do
   context "CLI" do
     it "can audit a user" do
       result = audit("--user anamartinez")
-      result.should include "I18N-tools\nNo Gemfile.lock found"
-      result.should include "js-cldr-timezones\nbundle-audit\nNo unpatched versions found"
+      result.should include "I18N-tools\nNo Gemfile.lock found" # did not use audit when not necessary
+      result.should include "js-cldr-timezones\nbundle-audit\nNo unpatched versions found" # used audit where necessary
     end
 
     it "shows --version" do
