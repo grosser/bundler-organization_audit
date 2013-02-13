@@ -30,19 +30,23 @@ module Bundler
       end
 
       def audit_repo(repo, options)
+        success = false
         puts repo.project
         in_temp_dir do
           if download_file(repo, "Gemfile.lock", options)
             if options[:ignore_gems] && repo.gem?(options)
               puts "Ignored because it's a gem"
             else
-              not sh("bundle-audit")
+              success = !sh("bundle-audit")
             end
           else
             puts "No Gemfile.lock found"
           end
         end
         puts ""
+        success
+      rescue Exception => e
+        puts "Error auditing #{repo.project} (#{e})"
       end
 
       def in_temp_dir(&block)

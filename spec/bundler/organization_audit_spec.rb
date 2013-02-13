@@ -54,6 +54,12 @@ describe Bundler::OrganizationAudit do
       result.should include "js-cldr-timezones\nbundle-audit\nNo unpatched versions found" # used audit where necessary
     end
 
+    it "can audit a unpatched user" do
+      result = audit("--user user-with-unpatched-apps", :fail => true)
+      result.should include "unpatched\nbundle-audit\nName: json\nVersion: 1.5.3" # Individual vulnerabilities
+      result.should include "Failed:\nhttps://github.com/user-with-unpatched-apps/unpatched" # Summary
+    end
+
     it "shows --version" do
       audit("--version").should include(Bundler::OrganizationAudit::VERSION)
     end
@@ -62,8 +68,8 @@ describe Bundler::OrganizationAudit do
       audit("--help").should include("Audit all Gemfiles")
     end
 
-    def audit(command)
-      sh("bin/bundle-organization-audit #{command}")
+    def audit(command, options={})
+      sh("bin/bundle-organization-audit #{command}", options)
     end
 
     def sh(command, options={})

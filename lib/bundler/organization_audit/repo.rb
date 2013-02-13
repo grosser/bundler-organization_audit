@@ -44,7 +44,7 @@ module Bundler
           download_content_via_raw(file)
         end
       rescue OpenURI::HTTPError => e
-        raise e unless e.message.start_with?("404")
+        raise "Error downloading #{file} from #{url} (#{e})" unless e.message.start_with?("404")
       end
 
       def private?
