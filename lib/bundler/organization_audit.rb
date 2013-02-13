@@ -20,9 +20,27 @@ module Bundler
         end
       end
 
-      def download_lock_file(url, branch, options)
+      def repos(options)
+        user = if options[:organization]
+          "orgs/#{options[:organization]}"
+        elsif options[:user]
+          "users/#{options[:user]}"
+        else
+          "user"
+        end
+        url = File.join(HOST, user, "repos")
+
+        download_all_pages(url, headers(options[:token])).map do |repo|
+          preferred_branch = repo["default_branch"] || repo["master_branch"] || "master"
+          [repo["url"], preferred_branch, repo["private"]]
+        end
+      end
+
+      private
+
+      def download_lock_file(url, branch, private, options)
         lock_file = "Gemfile.lock"
-        content = if options[:token]
+        content = if private
           download_content_via_api(url, branch, lock_file, options)
         else
           download_content_via_raw(url, branch, lock_file)
@@ -35,44 +53,27 @@ module Bundler
       # increases api rate limit
       def download_content_via_api(url, branch, file, options)
         url = File.join(url, "contents", file, "?ref=#{branch}")
-        content = open(url, headers(options)).read
+        content = open(url, headers(options.fetch(:token))).read
         content = JSON.load(content)["content"]
         Base64.decode64(content)
       end
 
       # unlimited
       def download_content_via_raw(url, branch, file)
-        File.join(url.sub("://api.", "://raw.").sub("/repos/", "/"), branch, file)
+        url = File.join(url.sub("://api.", "://raw.").sub("/repos/", "/"), branch, file)
+        open(url).read
       end
 
-      def repos(options)
-        user = if options[:organization]
-          "orgs/#{options[:organization]}"
-        elsif options[:user]
-          "users/#{options[:user]}"
-        else
-          "user"
-        end
-        url = File.join(HOST, user, "repos")
-
-        download_all_pages(url, headers(options)).map do |repo|
-          preferred_branch = repo["default_branch"] || repo["master_branch"] || "master"
-          [repo["url"], preferred_branch]
-        end
+      def headers(token)
+        token ? {"Authorization" => "token #{token}"} : {}
       end
-
-      def headers(options)
-        options[:token] ? {"Authorization" => "token #{options[:token]}"} : {}
-      end
-
-      private
 
       def find_failed(options)
         in_temp_dir do
-          repos(options).select do |url, branch|
+          repos(options).select do |url, branch, private|
             project = url.split("/").last
             puts "\n#{project}"
-            if download_lock_file(url, branch, options)
+            if download_lock_file(url, branch, private, options)
               not sh("bundle-audit")
             else
               puts "No Gemfile.lock found"
