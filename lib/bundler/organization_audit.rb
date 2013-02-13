@@ -2,6 +2,7 @@ require "bundler/organization_audit/version"
 require "open-uri"
 require "json"
 require "tmpdir"
+require "base64"
 
 module Bundler
   module OrganizationAudit
@@ -21,13 +22,27 @@ module Bundler
 
       def download_lock_file(url, branch, options)
         lock_file = "Gemfile.lock"
-        url = File.join(url.sub("://", "://raw."), branch, lock_file)
-        if options[:raw_token] && options[:user]
-          url << "?login=#{options[:user]}&token=#{options[:raw_token]}"
+        content = if options[:token]
+          download_content_via_api(url, branch, lock_file, options)
+        else
+          download_content_via_raw(url, branch, lock_file)
         end
-        content = open(url).read
         File.open(lock_file, "w") { |f| f.write content }
-      rescue OpenURI::HTTPError
+      rescue OpenURI::HTTPError => e
+        raise e unless e.message.start_with?("404")
+      end
+
+      # increases api rate limit
+      def download_content_via_api(url, branch, file, options)
+        url = File.join(url, "contents", file, "?ref=#{branch}")
+        content = open(url, headers(options)).read
+        content = JSON.load(content)["content"]
+        Base64.decode64(content)
+      end
+
+      # unlimited
+      def download_content_via_raw(url, branch, file)
+        File.join(url.sub("://api.", "://raw.").sub("/repos/", "/"), branch, file)
       end
 
       def repos(options)
@@ -39,12 +54,15 @@ module Bundler
           "user"
         end
         url = File.join(HOST, user, "repos")
-        headers = (options[:token] ? {"Authorization" => "token #{options[:token]}"} : {})
 
-        download_all_pages(url, headers).map do |repo|
+        download_all_pages(url, headers(options)).map do |repo|
           preferred_branch = repo["default_branch"] || repo["master_branch"] || "master"
-          [repo["url"].sub("api.", "").sub("/repos/", "/"), preferred_branch]
+          [repo["url"], preferred_branch]
         end
+      end
+
+      def headers(options)
+        options[:token] ? {"Authorization" => "token #{options[:token]}"} : {}
       end
 
       private

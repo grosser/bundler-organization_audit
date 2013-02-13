@@ -49,10 +49,7 @@ bundle-authorization-audit --user grosser #
 curl -v -u your-user-name -X POST https://api.github.com/authorizations --data '{"scopes":["repo","download"]}'
 enter your password -> TOKEN
 
-# get raw token
-Go to a private repo of the user/organization, click a file, click the raw link and copy the token from the url -> RAW_TOKEN
-
-bundle-authorization-audit --user your-user --token TOKEN --organization your-organization --raw-token RAW_TOKEN
+bundle-authorization-audit --user your-user --token TOKEN --organization your-organization
 ```
 
 Dev

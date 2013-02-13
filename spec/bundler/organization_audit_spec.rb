@@ -10,18 +10,18 @@ describe Bundler::OrganizationAudit do
     describe ".repos" do
       it "returns the list of public repositories" do
         list = Bundler::OrganizationAudit.repos(:user => "grosser")
-        list.should include(["https://github.com/grosser/parallel", "master"])
+        list.should include(["https://api.github.com/repos/grosser/parallel", "master"])
       end
 
       if File.exist?("spec/private.yml")
         it "returns the list of private repositories from a user" do
           list = Bundler::OrganizationAudit.repos(:token => config["token"])
-          list.should include(["https://github.com/#{config["user"]}/#{config["expected_user"]}", "master"])
+          list.should include(["https://api.github.com/repos/#{config["user"]}/#{config["expected_user"]}", "master"])
         end
 
         it "returns the list of private repositories from a organization" do
           list = Bundler::OrganizationAudit.repos(:token => config["token"], :organization => config["organization"])
-          list.should include(["https://github.com/#{config["organization"]}/#{config["expected_organization"]}", "master"])
+          list.should include(["https://api.github.com/repos/#{config["organization"]}/#{config["expected_organization"]}", "master"])
         end
       end
     end
@@ -29,9 +29,9 @@ describe Bundler::OrganizationAudit do
     describe ".download_lock_file" do
       if File.exist?("spec/private.yml")
         it "can download a private lockfile" do
-          url = "https://github.com/#{config["organization"]}/#{config["expected_organization"]}"
+          url = "https://api.github.com/repos/#{config["organization"]}/#{config["expected_organization"]}"
           in_temp_dir do
-            Bundler::OrganizationAudit.download_lock_file(url, "master", :raw_token => config["raw_token"], :user => config["user"])
+            Bundler::OrganizationAudit.download_lock_file(url, "master", :token => config["token"], :user => config["user"])
             File.read("Gemfile.lock").should include('i18n (0.')
           end
         end
@@ -39,7 +39,7 @@ describe Bundler::OrganizationAudit do
 
       it "can download a public lockfile" do
         in_temp_dir do
-          Bundler::OrganizationAudit.download_lock_file("https://github.com/grosser/parallel", "master", {})
+          Bundler::OrganizationAudit.download_lock_file("https://api.github.com/repos/grosser/parallel", "master", {})
           File.read("Gemfile.lock").should include('rspec (2')
         end
       end
@@ -50,6 +50,10 @@ describe Bundler::OrganizationAudit do
     end
 
     describe ".run" do
+      before do
+        Bundler::OrganizationAudit.stub(:puts)
+      end
+
       it "is successful when failed are empty" do
         Bundler::OrganizationAudit.should_receive(:find_failed).and_return([])
         Bundler::OrganizationAudit.should_receive(:exit).with(0)
