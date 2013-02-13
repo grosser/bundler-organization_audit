@@ -15,7 +15,7 @@ module Bundler
           exit 0
         else
           puts "Failed:"
-          puts failed.map(&:first)
+          puts failed.map(&:first).map { |url| url.sub(".api", "").sub("/repos", "") }
           exit 1
         end
       end
