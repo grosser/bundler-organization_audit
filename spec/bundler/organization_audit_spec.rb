@@ -63,7 +63,7 @@ describe Bundler::OrganizationAudit do
     end
 
     it "only shows failed projects on stdout" do
-      result = audit("--user user-with-unpatched-apps", :fail => true, :keep_output => true)
+      result = audit("--user user-with-unpatched-apps 2>/dev/null", :fail => true, :keep_output => true)
       result.should == "https://github.com/user-with-unpatched-apps/unpatched\n"
     end
 
