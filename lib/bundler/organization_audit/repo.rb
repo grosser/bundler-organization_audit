@@ -11,7 +11,7 @@ module Bundler
         @data = data
       end
 
-      def gem?(options)
+      def gem?(options={})
         !!content("#{project}.gemspec", options)
       end
 

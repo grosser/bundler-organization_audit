@@ -28,7 +28,7 @@ describe Bundler::OrganizationAudit::Repo do
     end
   end
 
-  describe ".content" do
+  describe "#content" do
     it "can download a public file" do
       repo.content("Gemfile.lock").should include('rspec (2')
     end
@@ -42,6 +42,16 @@ describe Bundler::OrganizationAudit::Repo do
         content = repo.content("Gemfile.lock", :token => config["token"], :user => config["user"])
         content.should include('i18n (0.')
       end
+    end
+  end
+
+  describe "#gem?" do
+    it "is a gem if it has a gemspec" do
+      repo.should be_gem
+    end
+
+    it "is not a gem if it has no gemspec" do
+      Bundler::OrganizationAudit::Repo.new("url" => "https://api.github.com/repos/grosser/dotfiles").should_not be_gem
     end
   end
 end
