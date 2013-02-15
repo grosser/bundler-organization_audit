@@ -1,9 +1,9 @@
 GIT
   remote: git://github.com/postmodern/bundler-audit.git
-  revision: ab15d8fd606e71b71b4d2024c61dc16baea83947
+  revision: ac366d986f92f1b80cf08ace04ef66212815d9d2
   specs:
     bundler-audit (0.1.1)
-      bundler (~> 1.0)
+      bundler (~> 1.2)
 
 PATH
   remote: .
