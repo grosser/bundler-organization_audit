@@ -3,7 +3,7 @@ name = "bundler-organization_audit"
 require "#{name.gsub("-","/")}/version"
 
 Gem::Specification.new name, Bundler::OrganizationAudit::VERSION do |s|
-  s.summary = "Audit all Gemfiles of a user/organization on github for unpatched versions"
+  s.summary = s.description = "Audit all Gemfiles of a user/organization on github for unpatched versions"
   s.authors = ["Michael Grosser"]
   s.email = "michael@grosser.it"
   s.homepage = "http://github.com/grosser/#{name}"
