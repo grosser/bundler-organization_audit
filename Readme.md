@@ -1,15 +1,5 @@
-Audit all Gemfiles of a user/organization on github for unpatched versions
+Audit all Gemfiles of a user/organization on Github for unpatched versions
 
-Install
-=======
-
-    # until new bundler-audit gem is realesed:
-    git clone git://github.com/grosser/bundler-organization_audit.git
-    cd bundler-organization_audit
-    bundle
-    bundle exec ./bin/bundle-organization-audit
-
-    # once things normalize
     gem install bundler-organization_audit
 
 Usage
