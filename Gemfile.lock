@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    bundler-organization_audit (0.0.0)
+    bundler-organization_audit (0.1.0)
       json
 
 GEM
