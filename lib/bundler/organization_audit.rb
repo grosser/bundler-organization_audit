@@ -38,7 +38,11 @@ module Bundler
             if options[:ignore_gems] && repo.gem?(options)
               $stderr.puts "Ignored because it's a gem"
             else
-              success = !sh("bundle-audit")
+              command = "bundle-audit"
+              if options[:ignore_cves] && options[:ignore_cves].any?
+                command << " --safe #{options[:ignore_cves].map { |cve| "'#{cve}'"  }.join(" ")}"
+              end
+              success = !sh(command)
             end
           else
             $stderr.puts "No Gemfile.lock found"

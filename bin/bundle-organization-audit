@@ -12,6 +12,7 @@ end
 
 options = {
   :ignore => [],
+  :ignore_cves => [],
   :user => git_config("github.user")
 }
 OptionParser.new do |opts|
@@ -27,6 +28,7 @@ BANNER
   opts.on("--user USER", "Use user") { |user| options[:user] = user }
   opts.on("--ignore REPO_URL", "Ignore given repo urls (use multiple times)") { |repo_url| options[:ignore] << repo_url }
   opts.on("--ignore-gems", "Ignore repos that have a %{repo}.gemspec") { options[:ignore_gems] = true }
+  opts.on("--ignore-cve CVE_NUMBER", "Ignore CVE that you do not want to get warned about just number or number@gem-version") { |cve| options[:ignore_cves] << cve }
   opts.on("--organization ORGANIZATION", "Use user") { |organization| options[:organization] = organization }
   opts.on("-h", "--help", "Show this.") { puts opts; exit }
   opts.on("-v", "--version", "Show Version"){ puts Bundler::OrganizationAudit::VERSION; exit}

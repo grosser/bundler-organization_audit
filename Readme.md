@@ -1,6 +1,14 @@
 Audit all Gemfiles of a user/organization on Github for unpatched versions
 
+    # simple
     gem install bundler-organization_audit
+
+    # if you want --ignore-cve
+    git clone git://github.com/grosser/bundler-organization_audit.git
+    cd bundler-organization_audit
+    bundle
+    cd `bundle show bundler-audit` && git submodule init && git submodule update && cd -
+    bundle exec ./bin/bundle-organization-audit ... options ...
 
 Usage
 =====
@@ -45,14 +53,19 @@ For pipe -> only show vulnerable repos
 bundle-organization-audit 2>/dev/null
 ```
 
-Use for CI -> ignore old/unmaintained proejcts
+Use for CI -> ignore old/unmaintained proejcts and unfixable/unimportant cves
 ```
 bundle-organization-audit \
   --ignore https://github.com/xxx/a \
   --ignore https://github.com/xxx/b \
+  --ignore-cve 2013-0269@1.5.3 \
+  --ignore-cve '2013-0123@~>3.2.10' \
+  --ignore-cve 2013-0234 \
   --organization xxx \
   --token yyy
 ```
+
+Ignore cve
 
 ### Private repos
 
