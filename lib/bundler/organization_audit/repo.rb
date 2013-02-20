@@ -68,7 +68,10 @@ module Bundler
         results = []
         page = 1
         loop do
-          result = JSON.parse(open("#{url}?page=#{page}", headers).read)
+          response = decorate_errors do
+            open("#{url}?page=#{page}", headers).read
+          end
+          result = JSON.parse(response)
           if result.size == 0
             break
           else
@@ -98,8 +101,14 @@ module Bundler
       end
 
       def call_api(path)
-        content = open(File.join(api_url, path), self.class.headers(@token)).read
+        content = self.class.decorate_errors do
+          open(File.join(api_url, path), self.class.headers(@token)).read
+        end
         JSON.load(content)
+      end
+
+      def self.decorate_errors
+        yield
       rescue OpenURI::HTTPError => e
         e.message << " -- body: " << e.io.read
         raise e
