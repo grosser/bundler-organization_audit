@@ -28,6 +28,12 @@ describe Bundler::OrganizationAudit::Repo do
     end
   end
 
+  describe "#last_commiter" do
+    it "returns nice info" do
+      repo.last_commiter.should == "grosser <grosser.michael@gmail.com>"
+    end
+  end
+
   describe "#content" do
     it "can download a public file" do
       repo.content("Gemfile.lock").should include('rspec (2')
@@ -37,9 +43,9 @@ describe Bundler::OrganizationAudit::Repo do
       it "can download a private file" do
         url = "https://api.github.com/repos/#{config["organization"]}/#{config["expected_organization"]}"
         repo = Bundler::OrganizationAudit::Repo.new(
-          "url" => url, "private" => true
+          {"url" => url, "private" => true}, config["token"]
         )
-        content = repo.content("Gemfile.lock", :token => config["token"], :user => config["user"])
+        content = repo.content("Gemfile.lock")
         content.should include('i18n (0.')
       end
     end

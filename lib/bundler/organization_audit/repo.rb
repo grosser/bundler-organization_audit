@@ -7,18 +7,22 @@ module Bundler
     class Repo
       HOST = "https://api.github.com"
 
-      def initialize(data)
+      def initialize(data, token=nil)
         @data = data
+        @token = token
       end
 
-      def gem?(options={})
-        !!content("#{project}.gemspec", options)
+      def gem?
+        !!content("#{project}.gemspec")
       end
 
       def url
         api_url.sub("api.", "").sub("/repos", "")
       end
-      alias_method :to_s, :url
+
+      def to_s
+        "#{url} -- #{last_commiter}"
+      end
 
       def project
         api_url.split("/").last
@@ -34,12 +38,13 @@ module Bundler
         end
         url = File.join(HOST, user, "repos")
 
-        download_all_pages(url, headers(options[:token])).map { |data| Repo.new(data) }
+        token = options[:token]
+        download_all_pages(url, headers(token)).map { |data| Repo.new(data, token) }
       end
 
-      def content(file, options={})
+      def content(file)
         if private?
-          download_content_via_api(file, options)
+          download_content_via_api(file)
         else
           download_content_via_raw(file)
         end
@@ -49,6 +54,12 @@ module Bundler
 
       def private?
         @data["private"]
+      end
+
+      def last_commiter
+        response = call_api("commits/#{branch}")
+        committer = response["commit"]["committer"]
+        "#{committer["name"]} <#{committer["email"]}>"
       end
 
       private
@@ -81,11 +92,17 @@ module Bundler
       end
 
       # increases api rate limit
-      def download_content_via_api(file, options)
-        url = File.join(api_url, "contents", file, "?ref=#{branch}")
-        content = open(url, self.class.headers(options.fetch(:token))).read
-        content = JSON.load(content)["content"]
+      def download_content_via_api(file)
+        content = call_api("contents/#{file}?branch=#{branch}")["content"]
         Base64.decode64(content)
+      end
+
+      def call_api(path)
+        content = open(File.join(api_url, path), self.class.headers(@token)).read
+        JSON.load(content)
+      rescue OpenURI::HTTPError => e
+        e.message << " -- body: " << e.io.read
+        raise e
       end
 
       # unlimited

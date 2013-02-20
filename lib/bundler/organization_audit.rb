@@ -6,8 +6,8 @@ module Bundler
   module OrganizationAudit
     class << self
       def run(options)
-        vulnerable = find_vulnerable(options).map(&:url)
-        vulnerable -= (options[:ignore] || [])
+        vulnerable = find_vulnerable(options)
+        vulnerable.reject! { |repo| (options[:ignore] || []).include? repo.url }
         if vulnerable.size == 0
           0
         else
@@ -19,8 +19,8 @@ module Bundler
 
       private
 
-      def download_file(repo, file, options)
-        return unless content = repo.content(file, options)
+      def download_file(repo, file)
+        return unless content = repo.content(file)
         File.open(file, "w") { |f| f.write content }
       end
 
@@ -34,8 +34,8 @@ module Bundler
         success = false
         $stderr.puts repo.project
         in_temp_dir do
-          if download_file(repo, "Gemfile.lock", options)
-            if options[:ignore_gems] && repo.gem?(options)
+          if download_file(repo, "Gemfile.lock")
+            if options[:ignore_gems] && repo.gem?
               $stderr.puts "Ignored because it's a gem"
             else
               command = "bundle-audit"

@@ -3,7 +3,7 @@ Audit all Gemfiles of a user/organization on Github for unpatched versions
     # simple
     gem install bundler-organization_audit
 
-    # if you want --ignore-cve
+    # if you want --ignore-cve + last committer info
     git clone git://github.com/grosser/bundler-organization_audit.git
     cd bundler-organization_audit
     bundle
@@ -35,7 +35,7 @@ Title: Rack Rack::Session::Cookie Function Timing Attack Remote Code Execution
 Patched Versions: ~> 1.1.6, ~> 1.2.8, ~> 1.3.10, ~> 1.4.5, >= 1.5.2
 
 Vulnerable:
-https://github.com/grosser/rails_example_app
+https://github.com/grosser/rails_example_app -- Peter Last Committer <peter@last-commit-email.com>
 ```
 
 For someone elese

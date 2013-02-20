@@ -64,7 +64,7 @@ describe Bundler::OrganizationAudit do
 
     it "only shows failed projects on stdout" do
       result = audit("--user user-with-unpatched-apps 2>/dev/null", :fail => true, :keep_output => true)
-      result.should == "https://github.com/user-with-unpatched-apps/unpatched\n"
+      result.should == "https://github.com/user-with-unpatched-apps/unpatched -- grosser <grosser.michael@gmail.com>\n"
     end
 
     it "ignores projects in --ignore" do
@@ -73,7 +73,7 @@ describe Bundler::OrganizationAudit do
     end
 
     it "ignores CVEs via --ignore-cve" do
-      result = audit("--user user-with-unpatched-apps --ignore-cve 2013-0269@1.5.3", :keep_output => true)
+      result = audit("--user user-with-unpatched-apps --ignore-cve 2013-0269@", :keep_output => true)
       result.should == ""
     end
 
