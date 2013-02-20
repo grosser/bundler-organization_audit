@@ -7,7 +7,6 @@ Audit all Gemfiles of a user/organization on Github for unpatched versions
     git clone git://github.com/grosser/bundler-organization_audit.git
     cd bundler-organization_audit
     bundle
-    cd `bundle show bundler-audit` && git submodule init && git submodule update && cd -
     bundle exec ./bin/bundle-organization-audit ... options ...
 
 Usage
