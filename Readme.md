@@ -37,7 +37,7 @@ Vulnerable:
 https://github.com/grosser/rails_example_app -- Peter Last Committer <peter@last-commit-email.com>
 ```
 
-For someone elese
+For someone else
 ```Bash
 bundle-organization-audit --user grosser
 ```
@@ -47,12 +47,12 @@ Ignore gems (ignores repos that have a %{repo}.gemspec)
 bundle-organization-audit --ignore-gems
 ```
 
-For pipe -> only show vulnerable repos
+Silent:  only show vulnerable repos
 ```
 bundle-organization-audit 2>/dev/null
 ```
 
-Use for CI -> ignore old/unmaintained proejcts and unfixable/unimportant cves
+CI: ignore old/unmaintained proejcts, unfixable/unimportant cves and gems
 ```
 bundle-organization-audit \
   --ignore https://github.com/xxx/a \
@@ -60,11 +60,10 @@ bundle-organization-audit \
   --ignore-cve 2013-0269@1.5.3 \
   --ignore-cve '2013-0123@~>3.2.10' \
   --ignore-cve 2013-0234 \
+  --ignore-gems \
   --organization xxx \
   --token yyy
 ```
-
-Ignore cve
 
 ### Private repos
 
@@ -76,8 +75,8 @@ enter your password -> TOKEN
 bundle-organization-audit --user your-user --token TOKEN --organization your-organization
 ```
 
-Dev
-===
+Development
+===========
  - test private repo fetching via `cp spec/private{.example,}.yml` and filling it out
 
 Author
