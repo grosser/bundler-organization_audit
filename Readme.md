@@ -75,6 +75,11 @@ enter your password -> TOKEN
 bundle-organization-audit --user your-user --token TOKEN --organization your-organization
 ```
 
+Related
+=======
+ - [holepicker](https://github.com/jsuder/holepicker) does the same check for local projects and running servers
+ - [bundler-audit](https://github.com/postmodern/bundler-audit) check a single local project for vulerabilities
+
 Development
 ===========
  - test private repo fetching via `cp spec/private{.example,}.yml` and filling it out
