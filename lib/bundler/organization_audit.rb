@@ -7,7 +7,6 @@ module Bundler
     class << self
       def run(options)
         vulnerable = find_vulnerable(options)
-        vulnerable.reject! { |repo| (options[:ignore] || []).include? repo.url }
         if vulnerable.size == 0
           0
         else
@@ -26,6 +25,7 @@ module Bundler
 
       def find_vulnerable(options)
         Repo.all(options).select do |repo|
+          next if (options[:ignore] || []).include? repo.url
           audit_repo(repo, options)
         end
       end

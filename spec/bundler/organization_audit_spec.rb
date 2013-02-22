@@ -73,7 +73,7 @@ describe Bundler::OrganizationAudit do
     end
 
     it "ignores CVEs via --ignore-cve" do
-      result = audit("--user user-with-unpatched-apps --ignore-cve 2013-0269@", :keep_output => true)
+      result = audit("--user user-with-unpatched-apps --ignore-cve 2013-0269 2>/dev/null", :keep_output => true)
       result.should == ""
     end
 
