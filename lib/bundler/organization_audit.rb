@@ -40,7 +40,7 @@ module Bundler
             else
               command = "bundle-audit"
               if options[:ignore_cves] && options[:ignore_cves].any?
-                command << " --ignore #{options[:ignore_cves].map { |cve| "'#{cve}'"  }.join(" ")}"
+                command << " --ignore #{options[:ignore_cves].map { |cve| "'CVE-#{cve}'"  }.join(" ")}"
               end
               success = !sh(command)
             end
