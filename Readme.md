@@ -3,10 +3,10 @@ Audit all Gemfiles of a user/organization on Github for unpatched versions
     # simple
     gem install bundler-organization_audit
 
-    # if you want --ignore-cve + last committer info
+    # if you want to ignore specific versions for a cve via --ignore-cve 123@~>2.3.18
     git clone git://github.com/grosser/bundler-organization_audit.git
     cd bundler-organization_audit
-    bundle
+    bundle update bundler-audit # get new advisories
     bundle exec ./bin/bundle-organization-audit ... options ...
 
 Usage
