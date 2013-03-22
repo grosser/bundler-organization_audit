@@ -9,8 +9,13 @@ Gem::Specification.new name, Bundler::OrganizationAudit::VERSION do |s|
   s.homepage = "http://github.com/grosser/#{name}"
   s.files = `git ls-files`.split("\n")
   s.license = "MIT"
-  s.signing_key = File.expand_path("~/.ssh/gem-private_key.pem")
+  key = File.expand_path("~/.ssh/gem-private_key.pem")
+  if File.exist?(key)
+    s.signing_key = key
+    s.cert_chain = ["gem-public_cert.pem"]
+  else
+    puts "No signature"
+  end
   s.executables = ["bundle-organization-audit"]
-  s.cert_chain = ["gem-public_cert.pem"]
   s.add_runtime_dependency "json"
 end
