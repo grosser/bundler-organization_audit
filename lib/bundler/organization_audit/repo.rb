@@ -13,7 +13,11 @@ module Bundler
       end
 
       def gem?
-        !!content("#{project}.gemspec")
+        !!gemspec_content
+      end
+
+      def gemspec_content
+        content("#{project}.gemspec")
       end
 
       def url
