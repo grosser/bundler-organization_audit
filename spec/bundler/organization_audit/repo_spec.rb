@@ -39,6 +39,13 @@ describe Bundler::OrganizationAudit::Repo do
       repo.content("Gemfile.lock").should include('rspec (2')
     end
 
+    it "caches responses" do
+      repo.should_receive(:download_content_via_raw).and_return "XXX"
+      repo.content("Gemfile.lock").should == "XXX"
+      repo.should_receive(:download_content_via_raw).never
+      repo.content("Gemfile.lock")
+    end
+
     if File.exist?("spec/private.yml")
       it "can download a private file" do
         url = "https://api.github.com/repos/#{config["organization"]}/#{config["expected_organization"]}"

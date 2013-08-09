@@ -43,10 +43,13 @@ module Bundler
       end
 
       def content(file)
-        if private?
-          download_content_via_api(file)
-        else
-          download_content_via_raw(file)
+        @content ||= {}
+        @content[file] ||= begin
+          if private?
+            download_content_via_api(file)
+          else
+            download_content_via_raw(file)
+          end
         end
       rescue OpenURI::HTTPError => e
         raise "Error downloading #{file} from #{url} (#{e})" unless e.message.start_with?("404")
