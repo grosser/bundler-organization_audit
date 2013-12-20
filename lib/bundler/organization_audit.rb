@@ -1,6 +1,6 @@
 require "bundler/organization_audit/version"
+require "organization_audit"
 require "tmpdir"
-require "bundler/organization_audit/repo"
 
 module Bundler
   module OrganizationAudit
@@ -24,40 +24,38 @@ module Bundler
       end
 
       def find_vulnerable(options)
-        Repo.all(options).select do |repo|
-          next if (options[:ignore] || []).include? repo.url
+        ::OrganizationAudit.all(options).select do |repo|
+          next if options[:ignore_gems] && repo.gem?
           audit_repo(repo, options)
         end
       end
 
       def audit_repo(repo, options)
-        success = false
-        $stderr.puts repo.project
+        vulnerable = false
+        $stderr.puts repo.name
         in_temp_dir do
           if download_file(repo, "Gemfile.lock")
-            if options[:ignore_gems] && repo.gem?
-              $stderr.puts "Ignored because it's a gem"
-            else
-              command = "bundle-audit"
-              if options[:ignore_cves] && options[:ignore_cves].any?
-                command << " --ignore #{options[:ignore_cves].map { |cve| "'CVE-#{cve}'"  }.join(" ")}"
-              end
-              success = !sh(command)
+            command = "bundle-audit"
+            if options[:ignore_cves] && options[:ignore_cves].any?
+              command << " --ignore #{options[:ignore_cves].map { |cve| "'CVE-#{cve}'"  }.join(" ")}"
             end
+            vulnerable = !sh(command)
           else
             $stderr.puts "No Gemfile.lock found"
           end
         end
         $stderr.puts ""
-        success
+        vulnerable
       rescue Exception => e
-        $stderr.puts "Error auditing #{repo.project} (#{e})"
+        $stderr.puts "Error auditing #{repo.name} (#{e})"
+        true
       end
 
       def in_temp_dir(&block)
         Dir.mktmpdir { |dir| Dir.chdir(dir, &block) }
       end
 
+      # http://grosser.it/2010/12/11/sh-without-rake
       def sh(cmd)
         $stderr.puts cmd
         IO.popen(cmd) do |pipe|

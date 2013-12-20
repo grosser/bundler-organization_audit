@@ -7,7 +7,7 @@ describe Bundler::OrganizationAudit do
 
   describe Bundler::OrganizationAudit do
     let(:repo) do
-      Bundler::OrganizationAudit::Repo.new(
+      OrganizationAudit::Repo.new(
         "url" => "https://api.github.com/repos/grosser/parallel"
       )
     end
@@ -18,13 +18,6 @@ describe Bundler::OrganizationAudit do
           Bundler::OrganizationAudit.send(:audit_repo, repo, {})
         end
         out.strip.should == "parallel\nbundle-audit\nNo unpatched versions found"
-      end
-
-      it "does not audit ignored repos" do
-        out = record_out do
-          Bundler::OrganizationAudit.send(:audit_repo, repo, :ignore_gems => true)
-        end
-        out.strip.should == "parallel\nIgnored because it's a gem"
       end
     end
 
@@ -62,12 +55,12 @@ describe Bundler::OrganizationAudit do
       result.should include "Vulnerable:\nhttps://github.com/user-with-unpatched-apps/unpatched" # Summary
     end
 
-    it "only shows failed projects on stdout" do
+    it "only shows failed repo on stdout" do
       result = audit("--user user-with-unpatched-apps 2>/dev/null", :fail => true, :keep_output => true)
       result.should == "https://github.com/user-with-unpatched-apps/unpatched -- user-with-unpatched-apps <michael+unpatched@grosser.it>\n"
     end
 
-    it "ignores projects in --ignore" do
+    it "ignores repos in --ignore" do
       result = audit("--user user-with-unpatched-apps --ignore https://github.com/user-with-unpatched-apps/unpatched 2>/dev/null", :keep_output => true)
       result.should == ""
     end

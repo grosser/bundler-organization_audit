@@ -1,7 +1,0 @@
-token: your-token-see-readme
-
-user: your-user
-expected_user: your-private-repo
-
-organization: org
-expected_organization: org-private-repo
