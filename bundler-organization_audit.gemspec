@@ -15,5 +15,5 @@ Gem::Specification.new name, Bundler::OrganizationAudit::VERSION do |s|
     s.cert_chain = ["gem-public_cert.pem"]
   end
   s.executables = ["bundle-organization-audit"]
-  s.add_runtime_dependency "organization_audit"
+  s.add_runtime_dependency "organization_audit", ">= 0.2.0"
 end
