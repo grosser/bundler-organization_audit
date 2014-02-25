@@ -10,7 +10,7 @@ GIT
 PATH
   remote: .
   specs:
-    bundler-organization_audit (0.2.0)
+    bundler-organization_audit (0.2.1)
       organization_audit (>= 0.2.0)
 
 GEM
