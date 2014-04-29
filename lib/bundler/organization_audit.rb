@@ -37,7 +37,7 @@ module Bundler
           if download_file(repo, "Gemfile.lock")
             command = "bundle-audit"
             if options[:ignore_cves] && options[:ignore_cves].any?
-              command << " --ignore #{options[:ignore_cves].map { |cve| cve.start_with?("CVE-") ? cve : "CVE-#{cve}"  }.join(" ")}"
+              command << " --ignore #{options[:ignore_cves].map { |cve| cve  }.join(" ")}"
             end
             vulnerable = !sh(command)
           else

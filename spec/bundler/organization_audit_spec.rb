@@ -44,7 +44,7 @@ describe Bundler::OrganizationAudit do
 
   context "CLI" do
     it "can audit a user" do
-      result = audit("--user anamartinez")
+      result = audit("--user anamartinez --ignore ruby-cldr-timezones --ignore enefele")
       result.should include "I18N-tools\nNo Gemfile.lock found" # did not use audit when not necessary
       result.should include "js-cldr-timezones\nbundle-audit\nNo unpatched versions found" # used audit where necessary
     end
@@ -66,7 +66,7 @@ describe Bundler::OrganizationAudit do
     end
 
     it "ignores CVEs via --ignore-cve" do
-      result = audit("--user user-with-unpatched-apps --ignore-cve 2013-0269 2>/dev/null", :keep_output => true)
+      result = audit("--user user-with-unpatched-apps --ignore-cve OSVDB-90074 2>/dev/null", :keep_output => true)
       result.should == ""
     end
 
