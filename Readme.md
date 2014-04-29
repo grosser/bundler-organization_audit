@@ -2,13 +2,8 @@ Audit all Gemfiles of a user/organization on Github for unpatched versions
 
     # simple
     gem install bundler-organization_audit
-
-    # if you want up-to-date vulnerability data
-    git clone git://github.com/grosser/bundler-organization_audit.git
-    cd bundler-organization_audit
-    bundler_audit=$(bundle show bundler-audit | grep bundler-audit)
-    cd $bundler_audit && git submodule -q foreach git pull -q origin master && cd - # get fresh vulnerability info
-    bundle exec ./bin/bundle-organization-audit ... options ...
+    bundle-audit update # get fresh vulnerability data
+    bundle-organization-audit ... options ...
 
 Usage
 =====
