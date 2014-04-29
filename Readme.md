@@ -72,7 +72,7 @@ bundle-organization-audit --user your-user --token TOKEN --organization your-org
 Related
 =======
  - [holepicker](https://github.com/jsuder/holepicker) does the same check for local projects and running servers
- - [bundler-audit](https://github.com/postmodern/bundler-audit) check a single local project for vulerabilities
+ - [bundler-audit](https://github.com/postmodern/bundler-audit) check a single local project for vulnerabilities
 
 Development
 ===========
