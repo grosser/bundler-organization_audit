@@ -26,7 +26,7 @@ Options:
 BANNER
   OrganizationAudit.optparse(parser, options)
   parser.on("--ignore-gems", "Ignore repos that have a %{repo}.gemspec") { options[:ignore_gems] = true }
-  parser.on("--ignore-cve CVE_NUMBER", "Ignore CVE that you do not want to get warned about just number or number@gem-version") { |cve| options[:ignore_cves] << cve }
+  parser.on("--ignore-cve CVE", "Ignore CVE") { |cve| options[:ignore_cves] << cve }
   parser.on("-h", "--help", "Show this.") { puts parser; exit }
   parser.on("-v", "--version", "Show Version"){ puts Bundler::OrganizationAudit::VERSION; exit}
 end.parse!

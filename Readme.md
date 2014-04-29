@@ -3,7 +3,7 @@ Audit all Gemfiles of a user/organization on Github for unpatched versions
     # simple
     gem install bundler-organization_audit
 
-    # if you want --ignore-cve + up-to-date vulnerability data
+    # if you want up-to-date vulnerability data
     git clone git://github.com/grosser/bundler-organization_audit.git
     cd bundler-organization_audit
     bundler_audit=$(bundle show bundler-audit | grep bundler-audit)
@@ -58,9 +58,7 @@ CI: ignore old/unmaintained proejcts, unfixable/unimportant cves and gems
 bundle-organization-audit \
   --ignore https://github.com/xxx/a \
   --ignore https://github.com/xxx/b \
-  --ignore-cve 2013-0269@1.5.3 \
-  --ignore-cve '2013-0123@~>3.2.10' \
-  --ignore-cve 2013-0234 \
+  --ignore-cve CVE-2013-0269 \
   --ignore-gems \
   --organization xxx \
   --token yyy
