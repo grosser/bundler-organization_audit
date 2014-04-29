@@ -12,7 +12,7 @@ end
 
 options = {
   :ignore => [],
-  :ignore_cves => [],
+  :ignore_advisories => [],
   :user => git_config("github.user")
 }
 OptionParser.new do |parser|
@@ -26,7 +26,7 @@ Options:
 BANNER
   OrganizationAudit.optparse(parser, options)
   parser.on("--ignore-gems", "Ignore repos that have a %{repo}.gemspec") { options[:ignore_gems] = true }
-  parser.on("--ignore-cve CVE", "Ignore CVE") { |cve| options[:ignore_cves] << cve }
+  parser.on("--ignore-advisory NAME", "Ignore advisory by name") { |advisory| options[:ignore_advisories] << advisory }
   parser.on("-h", "--help", "Show this.") { puts parser; exit }
   parser.on("-v", "--version", "Show Version"){ puts Bundler::OrganizationAudit::VERSION; exit}
 end.parse!

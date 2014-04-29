@@ -23,7 +23,7 @@ rails_example_app
 bundle-audit
 Name: rack
 Version: 1.4.4
-CVE: 2013-0263
+Advisory: OSVDB-101458
 Criticality: High
 URL: http://osvdb.org/show/osvdb/89939
 Title: Rack Rack::Session::Cookie Function Timing Attack Remote Code Execution
@@ -48,12 +48,12 @@ Silent:  only show vulnerable repos
 bundle-organization-audit 2>/dev/null
 ```
 
-CI: ignore old/unmaintained proejcts, unfixable/unimportant cves and gems
+CI: ignore old/unmaintained proejcts, unfixable/unimportant advisories and gems
 ```
 bundle-organization-audit \
   --ignore https://github.com/xxx/a \
   --ignore https://github.com/xxx/b \
-  --ignore-cve CVE-2013-0269 \
+  --ignore-advisory OSVDB-101458 \
   --ignore-gems \
   --organization xxx \
   --token yyy

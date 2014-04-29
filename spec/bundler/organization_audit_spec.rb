@@ -65,8 +65,8 @@ describe Bundler::OrganizationAudit do
       result.should == ""
     end
 
-    it "ignores CVEs via --ignore-cve" do
-      result = audit("--user user-with-unpatched-apps --ignore-cve OSVDB-90074 2>/dev/null", :keep_output => true)
+    it "ignores advisories via --ignore-advisory" do
+      result = audit("--user user-with-unpatched-apps --ignore-advisory OSVDB-90074 2>/dev/null", :keep_output => true)
       result.should == ""
     end
 
