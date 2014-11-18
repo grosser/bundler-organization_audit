@@ -25,7 +25,15 @@ module Bundler
 
       def find_vulnerable(options)
         ::OrganizationAudit.all(options).select do |repo|
-          next if options[:ignore_gems] && repo.gem?
+          begin
+            next if options[:ignore_gems] && repo.gem?
+          rescue OpenURI::HTTPError => e
+            if e.message.include?('This repository is empty')
+              puts "Failed to audit empty repo #{repo.name} -- #{e}"
+            else
+              raise
+            end
+          end
           audit_repo(repo, options)
         end
       end
