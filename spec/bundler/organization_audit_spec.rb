@@ -55,6 +55,11 @@ describe Bundler::OrganizationAudit do
       result.should include "Vulnerable:\nhttps://github.com/user-with-unpatched-apps/unpatched" # Summary
     end
 
+    it "can audit a empty repo user" do
+      result = audit("--user user-with-empty-repo")
+      result.should include "unpatched\nbundle-audit\nName: json\nVersion: 1.5.3"
+    end
+
     it "only shows failed repo on stdout" do
       result = audit("--user user-with-unpatched-apps 2>/dev/null", :fail => true, :keep_output => true)
       result.should == "https://github.com/user-with-unpatched-apps/unpatched -- user-with-unpatched-apps <michael+unpatched@grosser.it>\n"
