@@ -17,7 +17,7 @@ describe Bundler::OrganizationAudit do
         out = record_out do
           Bundler::OrganizationAudit.send(:audit_repo, repo, {})
         end
-        out.strip.should == "cmd2json\nbundle-audit\nNo unpatched versions found"
+        out.strip.should == "cmd2json\nbundle-audit\nNo vulnerabilities found"
       end
     end
 
@@ -46,7 +46,7 @@ describe Bundler::OrganizationAudit do
     it "can audit a user" do
       result = audit("--user anamartinez --ignore ruby-cldr-timezones --ignore enefele --ignore sso_authentication")
       result.should include "I18N-tools\nNo Gemfile.lock found" # did not use audit when not necessary
-      result.should include "js-cldr-timezones\nbundle-audit\nNo unpatched versions found" # used audit where necessary
+      result.should include "js-cldr-timezones\nbundle-audit\nNo vulnerabilities found" # used audit where necessary
     end
 
     it "can audit a unpatched user" do
